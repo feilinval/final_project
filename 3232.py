@@ -1,3 +1,4 @@
+  
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt	
@@ -10,11 +11,10 @@ t = np.linspace(0, years*seconds_in_year, frames)
 
 def move_func(s, t):
     (x, v_x, y, v_y,
-    xm, vm_x, ym, vm_y,
-    xq, vq_x, yq, vq_y,
-    xf, vf_x, yf, vf_y,
-    xh, vh_x, yh, vh_y
-    ) = s
+     xm, vm_x, ym, vm_y,
+     xq, vq_x, yq, vq_y,
+     xf, vf_x, yf, vf_y,
+     xh, vh_x, yh, vh_y) = s
     
     dxdt = v_x
     dv_xdt = - G * m * x / (x**2 + y**2)**1.5
@@ -41,7 +41,6 @@ def move_func(s, t):
     dyhdt = vh_y
     dvh_ydt = - G * m * yh / (xh**2 + yh**2)**1.5
 
-
     return (dxdt, dv_xdt, dydt, dv_ydt,
             dxmdt, dvm_xdt, dymdt, dvm_ydt,
             dxqdt, dvq_xdt, dyqdt, dvq_ydt,
@@ -51,38 +50,38 @@ def move_func(s, t):
 
 G = 6.67 * 10**(-11)
 m = 1.98 * 10**(30)
+ae = 149 * 10**9
 
-xm0 = 228 * 10**9
-vm_x0 = 0
-ym0 = 0
-vm_y0 = 24000
-
-x0 = 149 * 10**9
+x0 = ae
 v_x0 = 0
 y0 = 0
 v_y0 = 30000
 
-xq0 = 150 * 10**9
+xm0 = 1.523662 * ae
+vm_x0 = 0
+ym0 = 0
+vm_y0 = 24000
+
+xq0 = 0.38709927 * ae
 vq_x0 = 0
 yq0 = 0
-vq_y0 = 25000
+vq_y0 = 47360
 
-xf0 = 160 * 10**9
+xf0 = 0.723332 * ae
 vf_x0 = 0
 yf0 = 0
-vf_y0 = 26000
+vf_y0 = 35020
 
-xh0 = 130 * 10**9
+xh0 = 5.204267 * ae
 vh_x0 = 0
 yh0 = 0
-vh_y0 = 23000
+vh_y0 = 13070
 
-
-
-s0 = (xm0, vm_x0, ym0, vm_y0,
-      x0,v_x0,y0,v_y0,
-      xq0,vq_x0,yq0,vq_y0,
-      xf0, vf_x0, yf0, vf_y0)
+s0 = (x0, v_x0, y0, v_y0, 
+      xm0, vm_x0, ym0, vm_y0,
+      xq0, vq_x0, yq0, vq_y0,
+      xf0, vf_x0, yf0, vf_y0,
+      xh0, vh_x0, yh0, vh_y0)
 
 def solve_func(i, key):
     sol = odeint(move_func, s0, t)
@@ -124,7 +123,10 @@ ball_lineq, = plt.plot([], [], '-', color='b')
 ballf, = plt.plot([], [], 'o', color='b')
 ball_linef, = plt.plot([], [], '-', color='b')
 
-plt.plot([0], [0], 'o', color='y', ms=20)
+ballh, = plt.plot([], [], 'o', color='b')
+ball_lineh, = plt.plot([], [], '-', color='b')
+
+plt.plot([0], [0], 'o', color='y', ms=15)
 
 def animate(i):
     ball.set_data(solve_func(i, 'point')[0])
@@ -139,13 +141,16 @@ def animate(i):
     ballf.set_data(solve_func(i, 'point')[3])
     ball_linef.set_data(solve_func(i, 'line')[3])
 
+    ballh.set_data(solve_func(i, 'point')[4])
+    ball_lineh.set_data(solve_func(i, 'line')[4])
+
 ani = FuncAnimation(fig,
                     animate,
                     frames=frames,
                     interval=30)  
 
 plt.axis('equal')
-edge = 4*x0
+edge = 6 * ae
 ax.set_xlim(-edge, edge)
 ax.set_ylim(-edge, edge)
 
